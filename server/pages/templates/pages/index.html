@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>Bank Transfer</title>
+    </head>
+    <body>
+		<h1>Super Bank</h1>
+        <table>
+		  <tr>
+		    <th style="text-align:left">Username: <td>{{user.username}} 
+		  <tr>
+		    <th style="text-align:left">Balance:  <td>{{user.account.balance}}
+		</table>
+        <form action='logout/' method="post">
+			{% csrf_token %}
+            <input type="submit" value="Logout"/>
+        </form>
+        <h2>Transfer money</h2>
+
+        <!-- FLAW 7: -->
+        <!-- A01:2021 Broken Access Control (post/get): The money transfer is implemented with
+             a GET request, which allows anyone to trigger the URL directly.-->
+        
+        <!-- FLAW 8: -->
+        <!-- A05:2021 Security Misconfiguration (csrf): The request is not protected with
+             CSRF tokens, enabling an attacker to force the user into making an unintended transfer.-->
+        
+        <form action='transfer/' method="get">
+
+        <!--<form action='transfer/' method="post">-->
+        <!--{% csrf_token %}-->
+
+            <span>To:</span><br/>
+            <select name="to">
+			{% for account in accounts %}
+                <option value="{{account.user.username}}">{{account.user.username}}</option>
+			{% endfor %}
+            </select><br/>
+            <span>Amount:</span><br/>
+            <input type="number" name="amount"/><br/>
+            <input type="submit" value="Transfer"/>
+        </form>
+    </body>
+</html>
