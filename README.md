@@ -1,13 +1,16 @@
 # Super Bank
 
-Installation instructions
+## Installation instructions
 
 This project is implemented with Django and can be run locally as follows:
 
-Clone the repository:
-git clone https://github.com/Matias000001/superbank or
+### Clone the repository
+```bash
+git clone https://github.com/Matias000001/superbank
+# or
 git clone https://github.com/Matias000001/superbank.git
 cd superbank
+
 
 Create and activate a virtual environment:
 python3 -m venv .venv
