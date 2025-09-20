@@ -14,16 +14,17 @@ def confirmView(request):
 	# blocking self-transfers.
 	
 	# FLAW 2:
-	# A05:2021 Security Misconfiguration (POST/GET):
-    # Confirm endpoint accepts GET requests, so attacker can trigger it via <img>.
+	# A05:2021 Security Misconfiguration (csrf): The confirmation endpoint is not
+	# protected with CSRF tokens, allowing an attacker to trick the user into making an unintended transfer.
 
 	# FLAW 3:
 	# A08:2021 Software and Data Integrity Failures: The transaction logic blindly
 	# updates account balances without safeguards, which makes it possible to corrupt
 	# the integrity of financial data.
-	
-	amount = request.session['amount']
-	to = User.objects.get(username=request.session['to'])
+
+	# BAD:
+	amount = int(request.GET.get('amount'))
+	to = User.objects.get(username=request.GET.get('to'))
 	request.user.account.balance -= amount
 	to.account.balance += amount
 	request.user.account.save()
@@ -54,12 +55,13 @@ def confirmView(request):
 def transferView(request):
 
 	# FLAW 4:
-	# A03:2021 Injection: User input (to, amount) is taken directly from request.GET
+	# A03:2021 Injection: User input (to, amount) is taken directly from request.GET/POST
 	# and stored in the session without validation. This allows for type confusion
 	# and potential DoS attacks.
-	
-	request.session['to'] = request.GET.get('to')
-	request.session['amount'] = int(request.GET.get('amount'))
+
+	# BAD:
+	request.session['to'] = request.POST.get('to')
+	request.session['amount'] = request.POST.get('amount')
 	return render(request, 'pages/confirm.html')
 
 	# FIX (commented):
@@ -74,11 +76,10 @@ def transferView(request):
     #         request.session['to'] = to
     #         request.session['amount'] = amount
     #     except (ValueError, User.DoesNotExist):
-    #         return HttpResponse("Invalid transfer data", status=400)
+    #         return HttpResponse("Et voi siirtää negatiivista rahamäärää uuno!", status=400)
     #     return render(request, 'pages/confirm.html')
     # else:
     #     return redirect('/')
-
 
 @login_required
 def homePageView(request):

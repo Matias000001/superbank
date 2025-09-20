@@ -15,24 +15,26 @@
 		</table>
 		<br/>
 		Are you sure?
-        
+
         <!-- FLAW 5 -->
         <!-- A01:2021 Broken Access Control (post/get): The money transfer is implemented with
              a GET request, which allows anyone to trigger the URL directly.-->
-        
-        <!-- FLAW 6 -->
-        <!-- A05:2021 Security Misconfiguration (csrf): The request is not protected with
-             CSRF tokens, enabling an attacker to force the user into making an unintended transfer.-->
 
-        <form action='/confirm/' method="GET">
+        <!-- FLAW 2 -->
+        <!-- A05:2021 Security Misconfiguration (csrf): The confirmation endpoint is not protected
+             with CSRF tokens, allowing an attacker to trick the user into making an unintended transfer.-->
+
+        <!-- BAD (commented):-->
+        <form action='/confirm/' method="get">
+            <input type="hidden" name="to" value="{{ request.session.to }}">
+            <input type="hidden" name="amount" value="{{ request.session.amount }}">
             <input type="submit" value="Yes"/>
         </form>
-        <form action='/' method="GET">
+        <form action='/' method="get">
             <input type="submit" value="No"/>
-        </form>
-        
-        <!-- FIX (commented):-->
-        <!-- <form action='/confirm/' method="post">
+
+        <!-- FIX (commented): -->
+        <!--<form action='/confirm/' method="post">
             {% csrf_token %}
             <input type="submit" value="Yes"/>
         </form>
@@ -40,6 +42,6 @@
             {% csrf_token %}
             <input type="submit" value="No"/>
         </form> -->
-        
+        </form>
     </body>
 </html>

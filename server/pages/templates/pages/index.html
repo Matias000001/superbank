@@ -17,19 +17,34 @@
         </form>
         <h2>Transfer money</h2>
 
-        <!-- FLAW 7: -->
+        <!-- FLAW 5: -->
         <!-- A01:2021 Broken Access Control (post/get): The money transfer is implemented with
              a GET request, which allows anyone to trigger the URL directly.-->
-        
-        <!-- FLAW 8: -->
-        <!-- A05:2021 Security Misconfiguration (csrf): The request is not protected with
-             CSRF tokens, enabling an attacker to force the user into making an unintended transfer.-->
-        
+
+        <!-- FLAW 2: -->
+        <!-- A05:2021 Security Misconfiguration (csrf): The confirmation endpoint is not protected
+             with CSRF tokens, allowing an attacker to trick the user into making an unintended transfer.-->
+
+        <!-- FLAW 4: -->
+        <!-- A03:2021 Injection: User input (to, amount) is taken directly from request.POST/GET
+             and stored in the session without validation. This allows, for example, for type confusion
+             and potential DoS attacks.-->
+        <!-- BAD: -->
         <form action='transfer/' method="get">
+            <span>To:</span><br/>
+            <select name="to">
+			{% for account in accounts %}
+                <option value="{{account.user.username}}">{{account.user.username}}</option>
+			{% endfor %}
+            </select><br/>
+            <span>Amount:</span><br/>
+            <input type="text" name="amount"/><br/>
+            <input type="submit" value="Transfer"/>
+        </form>
 
-        <!--<form action='transfer/' method="post">-->
-        <!--{% csrf_token %}-->
-
+        <!-- FIX (commented): -->
+        <!-- <form action='transfer/' method="post">
+            {% csrf_token %}
             <span>To:</span><br/>
             <select name="to">
 			{% for account in accounts %}
@@ -39,6 +54,6 @@
             <span>Amount:</span><br/>
             <input type="number" name="amount"/><br/>
             <input type="submit" value="Transfer"/>
-        </form>
+        </form> -->
     </body>
 </html>
